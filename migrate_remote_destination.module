@@ -1,0 +1,12 @@
+<?php
+
+use Drupal\Component\Utility\NestedArray;
+
+/**
+ * Implements hook_migration_plugins_alter().
+ */
+function migrate_remote_destination_migration_plugins_alter(array &$migrations) {
+  if ($to_merge = array_intersect_key(\Drupal::config('migrate_remote_destination.settings')->get(), $migrations)) {
+    $migrations = NestedArray::mergeDeep($migrations, $to_merge);
+  }
+}
