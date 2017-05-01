@@ -76,7 +76,11 @@ class MigrateRemoteDestination extends DestinationBase implements ContainerFacto
     $response = $this->client->post($url, [$format => $values]);
     if (substr($response->getStatusCode(), 0, 1) === '2') {
       if (isset($this->configuration['ids'])) {
-        if ($return = array_intersect_key(json_decode($response->getBody(), TRUE), $this->configuration['ids'])) {
+        $response = json_decode($response->getBody(), TRUE);
+        if (is_scalar($response) && $response !== FALSE && count($this->configuration['ids']) == 1) {
+          return array_combine(array_keys($this->configuration['ids']), [$response]);
+        }
+        if (is_array($response) && ($return = array_intersect_key($response, $this->configuration['ids']))) {
           return $return;
         }
       }
